@@ -5,7 +5,8 @@ a good machine learning pipeline for your data. It is a genetic algorithm that s
 over the sklearn classifier algorithms. It does not train the model or do prediction, it's just
 for finding an appropriate model and set of hyperparameters, as well as preprocessors.
 
-Here are three scripts that run TPOT, train the model, and do prediction
+Here are three scripts that run TPOT, train the model, and do prediction. This is a brief outline
+of what you'll do to run them, but there's more documentation in the scripts themselves.
 
 1.) train_TPOT.py: Run TPOT on training data to find a good pipeline. This will take a few days. 
 It can be sped up by using more jobs, but that can make it crash. Note that TPOT outputs a python 

@@ -221,7 +221,7 @@ if not os.path.exists(args.temp_dir):
 print("Loading data")
 df = pd.read_csv(args.training_data, sep=args.delimiter, index_col=args.id_cols)
 label_name = df.columns[-1]
-print("Using '{}' as label column").format(label_name)
+print("Using '{}' as label column".format(label_name))
 
 print("Dropping unlabeled rows")
 df = df[df[label_name].isin(args.labels)]

@@ -46,7 +46,7 @@ joblib.dump(exported_pipeline, serialized_trained_model_outfile)
 
 train_fit_probs = exported_pipeline.predict_proba(train_data)[:,1]
 train_aps = sklearn.metrics.average_precision_score(train_label,train_fit_probs)
-print("Training set average precision score: {}").format(train_aps)
+print("Training set average precision score: {}".format(train_aps))
 
 del train
 del train_data
@@ -59,7 +59,7 @@ test_data = test.values
 test_probs = exported_pipeline.predict_proba(test_data)[:,1]
 
 test_aps = sklearn.metrics.average_precision_score(test_label, test_probs)
-print("Test set average precision score: {}").format(test_aps)
+print("Test set average precision score: {}".format(test_aps))
 
 test_p, test_r, _ = sklearn.metrics.precision_recall_curve(test_label, test_probs)
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from tpot.builtins import ZeroCount
 
-### BJL: training and test data are csv files with first two columns as IDs and label column called "label"
+### BJL: training and test data are csv files with first two columns as IDs and label column called "label")
 ### all other columns should be features.
 training_infile = "/project/bjl786/Synaptosome/Mouse/features/Mouse_features_07142018.train_labeled.csv"
 test_infile = "/project/bjl786/Synaptosome/Mouse/features/Mouse_features_07142018.test_labeled.csv"
@@ -34,23 +35,23 @@ exported_pipeline = make_pipeline(
 assert os.path.exists(training_infile), "{} not found".format(training_infile)
 assert os.path.exists(test_infile), "{} not found".format(test_infile)
 
-print "Reading training data"
+print("Reading training data")
 train = pd.read_csv(training_infile, index_col=[0,1])
 train_label = train.pop("label").values
 train_data = train.values
     
-print "Training model"
+print("Training model")
 exported_pipeline.fit(train_data, train_label)
 joblib.dump(exported_pipeline, serialized_trained_model_outfile)
 
 train_fit_probs = exported_pipeline.predict_proba(train_data)[:,1]
 train_aps = sklearn.metrics.average_precision_score(train_label,train_fit_probs)
-print "Training set average precision score: {}".format(train_aps)
+print("Training set average precision score: {}").format(train_aps)
 
 del train
 del train_data
 
-print "Reading test data"
+print("Reading test data")
 test = pd.read_csv(test_infile, index_col=[0,1])
 test_label = test.pop("label")
 test_data = test.values
@@ -58,7 +59,7 @@ test_data = test.values
 test_probs = exported_pipeline.predict_proba(test_data)[:,1]
 
 test_aps = sklearn.metrics.average_precision_score(test_label, test_probs)
-print "Test set average precision score: {}".format(test_aps)
+print("Test set average precision score: {}").format(test_aps)
 
 test_p, test_r, _ = sklearn.metrics.precision_recall_curve(test_label, test_probs)
 

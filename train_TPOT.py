@@ -1,5 +1,6 @@
 #! /usr/bin/env python
-
+from __future__ import print_function
+import os
 import gc
 import argparse
 import numpy as np
@@ -199,6 +200,7 @@ parser.add_argument("--score", default="average_precision", help="Which scoring 
 parser.add_argument("--generations", type=int, default=100, help="How many generations to run, default=100")
 parser.add_argument("--population_size", type=int, default=100, help="Size of the recombining population, default=100")
 parser.add_argument("--n_jobs", type=int, default=1, help="How many jobs to run in parallel. Warning, n_jobs>1 is crashy")
+parser.add_argument("--id_cols", type=int, nargs="+", default=[0,1], help="Which column(s) contain(s) row identifiers, default=[0,1]")
 parser.add_argument("--labels", type=int, nargs="+", default=[0,1], help="Which labels to retain, default=[0,1]")
 parser.add_argument("--delimiter", default=",", help="Delimiter of training data, default=','")
 parser.add_argument("--temp_dir", default="tpot_tmp", help="Temporary directory to stash intermediate results")
@@ -212,20 +214,22 @@ if args.classifier_subset != None:
     tpot_config.update(classifiers)
 else:
     tpot_config.update(Classifiers) # use all
+   
+if not os.path.exists(args.temp_dir):
+    os.makedirs(args.temp_dir) 
     
-    
-print "Loading data"
-df = pd.read_csv(args.training_data, sep=args.delimiter, index_col=[0,1])
+print("Loading data")
+df = pd.read_csv(args.training_data, sep=args.delimiter, index_col=args.id_cols)
 label_name = df.columns[-1]
-print "Using '{}' as label column".format(label_name)
+print("Using '{}' as label column").format(label_name)
 
-print "Dropping unlabeled rows"
+print("Dropping unlabeled rows")
 df = df[df[label_name].isin(args.labels)]
 
 labels = df.pop(label_name)
 data = df.values
         
-print "Running TPOT"        
+print("Running TPOT")        
 tpot = TPOTClassifier(verbosity=2, scoring=args.score, config_dict=tpot_config,
                         generations=args.generations, population_size=args.population_size,
                         memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start)

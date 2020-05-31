@@ -6,7 +6,6 @@ import pandas as pd
 from tpot_utils import trim_pipeline
 from tpot_utils import eval_train
 from tpot_utils import eval_test
-from breakup_exported_pipeline import trim_pipeline
 
 import sklearn.metrics
 from sklearn.externals import joblib

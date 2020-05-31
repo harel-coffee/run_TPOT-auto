@@ -33,7 +33,7 @@ def eval_train(exported_pipeline, training_infile, serialized_trained_model="fit
 def eval_test(exported_pipeline, test_infile, pr_curve_outfile="test_PRC.csv", results_df_outfile="test_resultsDF.csv", index_cols=[0,1] ):   
 
     assert os.path.exists(test_infile), "{} not found".format(test_infile)
-    print("Reading test data", index_cols=[0,1])
+    print("Reading test data")
     test = pd.read_csv(test_infile, index_col=index_cols)
     test_label = test.pop("label")
     test_data = test.values

@@ -1,3 +1,9 @@
+import os
+import numpy as np
+import pandas as pd 
+import sklearn.metrics
+from sklearn.externals import joblib
+
 
 def trim_pipeline(pipeline_file, pipeline_outfile):
     #TPOT export exports a pipeline with steps we don't need
@@ -19,7 +25,7 @@ def eval_train(exported_pipeline, training_infile, serialized_trained_model="fit
     
     print("Training model")
     exported_pipeline.fit(train_data, train_label)
-    joblib.dump(exported_pipeline, serialized_trained_model_outfile)
+    joblib.dump(exported_pipeline, serialized_trained_model)
     
     train_fit_probs = exported_pipeline.predict_proba(train_data)[:,1]
     train_aps = sklearn.metrics.average_precision_score(train_label,train_fit_probs)

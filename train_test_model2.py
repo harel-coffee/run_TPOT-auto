@@ -1,16 +1,14 @@
 from __future__ import print_function
-import os
+#import os
 import argparse
-import numpy as np
-import pandas as pd
+#import numpy as np
+#import pandas as pd
 from tpot_utils import trim_pipeline
 from tpot_utils import eval_train
 from tpot_utils import eval_test
 
-import sklearn.metrics
-from sklearn.externals import joblib
-
-
+#import sklearn.metrics
+#from sklearn.externals import joblib
     
 if __name__ == "__main__":
 

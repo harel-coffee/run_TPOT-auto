@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pandas as pd
 import sklearn.metrics
-from tpot_utils import 
 from sklearn.externals import joblib
 
 ### BJL: paste necessary imports from TPOT here
@@ -34,10 +33,6 @@ exported_pipeline = make_pipeline(
 )
 
 ##### Don't change anything below here
-
-eval_train(exported_pipeline, training_infile, serialized_trained_model,  pr_curve_outfile)
-eval_test(exported_pipeline, test_infile, pr_curve_outfile, results_df_outfile, index_cols )
-
 
 assert os.path.exists(training_infile), "{} not found".format(training_infile)
 assert os.path.exists(test_infile), "{} not found".format(test_infile)

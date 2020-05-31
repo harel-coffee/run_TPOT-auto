@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import sklearn.metrics
+from tpot_utils import 
 from sklearn.externals import joblib
 
 ### BJL: paste necessary imports from TPOT here
@@ -12,6 +13,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from tpot.builtins import ZeroCount
 
+
 ### BJL: training and test data are csv files with first two columns as IDs and label column called "label")
 ### all other columns should be features.
 training_infile = "/project/bjl786/Synaptosome/Mouse/features/Mouse_features_07142018.train_labeled.csv"
@@ -19,8 +21,9 @@ test_infile = "/project/bjl786/Synaptosome/Mouse/features/Mouse_features_0714201
 
 ### BJL: outfiles
 serialized_trained_model_outfile = "tpot_07142018_fitted_model.p"
-pr_curve_outfile = "tpot_07142018_test_PRC.csv"
-results_df_outfile = "tpot_07142018_test_resultsDF.csv"
+pr_curve_outfile = #"tpot_07142018_test_PRC.csv"
+results_df_outfile = #"tpot_07142018_test_resultsDF.csv"
+index_cols=[0,1]
 
 ##### BJL: paste TPOT pipeline here
 
@@ -31,6 +34,10 @@ exported_pipeline = make_pipeline(
 )
 
 ##### Don't change anything below here
+
+eval_train(exported_pipeline, training_infile, serialized_trained_model,  pr_curve_outfile)
+eval_test(exported_pipeline, test_infile, pr_curve_outfile, results_df_outfile, index_cols )
+
 
 assert os.path.exists(training_infile), "{} not found".format(training_infile)
 assert os.path.exists(test_infile), "{} not found".format(test_infile)

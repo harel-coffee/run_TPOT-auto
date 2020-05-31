@@ -22,11 +22,15 @@ python train_TPOT.py --training_data path/to/training_data.csv \
 ```
 
 2.) After running TPOT, it's now time to train the model and test it on your hold-out set. TPOT has
-writtten a python script (called 'tpot_output.py' in the example above). You should now cut and paste 
-the appropriate parts into the script called train_test_model.py, which will train the model using
+written a python script (called 'tpot_output.py' in the example above).
+
+ Option A) You should now cut and paste the appropriate parts into the script called train_test_model.py, which will train the model using
 pipeline from TPOT and test it against your holdout set. It writes a serialized model object, a 
 csv file with precision-recall results on the test set, and a csv file with the prediction results
 on the test set (ID1,ID2,known_label,classifier_score,FDR)
+
+  Option B) Use wrapper script python train_test_model2.py --training_infile /path/to/training_data.csv --test_infile /path/to/test_data.csv --exported_pipeline tpot_test_all.py --id_cols 0
+
 
 3.) If you like the results of testing on your leaveout set, you can predict on your full dataset 
 using the trained, serialized model with tpot_predict.py

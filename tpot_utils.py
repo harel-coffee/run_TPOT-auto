@@ -4,7 +4,6 @@ import pandas as pd
 import sklearn.metrics
 from sklearn.externals import joblib
 
-
 def trim_pipeline(pipeline_file, pipeline_outfile):
     #TPOT export exports a pipeline with steps we don't need
 

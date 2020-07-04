@@ -34,7 +34,10 @@ if __name__ == "__main__":
 
     # This is done to load in the set of imported modules in the exported pipeline
     # object `exported_pipeline` is loaded from this execfile
-    execfile(trimmed_pipeline_outfile)
+ 
+    #python2/3 change
+    #execfile(trimmed_pipeline_outfile)
+    exec(open(trimmed_pipeline_outfile).read())
 
     serialized_trained_model_outfile = args.output_basename + "_fitted_model.p"
     pr_curve_outfile =  args.output_basename + "_test_PRC.csv"

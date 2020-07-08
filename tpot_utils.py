@@ -24,8 +24,33 @@ def eval_train(exported_pipeline, training_infile, serialized_trained_model="fit
     
     print("Training model")
     exported_pipeline.fit(train_data, train_label)
+
+    print("Writing model")
     joblib.dump(exported_pipeline, serialized_trained_model)
+    plaintext_fname =  "{}.txt".format(serialized_trained_model)
+    with open(plaintext_fname, "w") as f:
+       f.write(str(exported_pipeline))
+
+
+    print("Recording feature importances")
+    names = train.columns
+
+    sel_method = exported_pipeline.steps[0][0]
+    featimp = exported_pipeline.steps[2][1].feature_importances_
+    featimp_fname = "{}.featureimportances".format(serialized_trained_model)
+
+    numfeats = len(featimp)
+    rank = range(1, numfeats)
+   
+    ordering = sorted(zip(map(lambda x: round(x, 4), featimp), names, [sel_method]*numfeats), reverse=True)
     
+    df = pd.DataFrame(ordering, columns = ["score", "feature", "featsel_method"])
+    df.index.name="rank"
+    df = df.reset_index() 
+    df.to_csv(featimp_fname, index=False)
+
+
+    print("Calculating training average precision")
     train_fit_probs = exported_pipeline.predict_proba(train_data)[:,1]
     train_aps = sklearn.metrics.average_precision_score(train_label,train_fit_probs)
     print("Training set average precision score: {}".format(train_aps))

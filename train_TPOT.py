@@ -229,8 +229,10 @@ df = df[df[label_name].isin(args.labels)]
 labels = df.pop(label_name)
 data = df.values
         
-print("Running TPOT")        
-tpot = TPOTClassifier(verbosity=2, scoring=args.score, config_dict=tpot_config,
+print("Running TPOT")       
+print("Requires > 0.10.0")
+tpot = TPOTClassifier(template = 'Selector-Transformer-Classifier', 
+             verbosity=2, scoring=args.score, config_dict=tpot_config,
                         generations=args.generations, population_size=args.population_size,
                         memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start)
 tpot.fit(data, labels)

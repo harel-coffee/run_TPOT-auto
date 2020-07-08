@@ -90,7 +90,7 @@ Classifiers = {
     },
 }
 
-Preprocessors = {
+Transformers = {
     'sklearn.preprocessing.Binarizer': {
         'threshold': np.arange(0.0, 1.01, 0.05)
     },
@@ -147,8 +147,10 @@ Preprocessors = {
     'tpot.builtins.OneHotEncoder': {
         'minimum_fraction': [0.05, 0.1, 0.15, 0.2, 0.25],
         'sparse': [False]
-    },
+    }
+}
 
+Selectors = {
     # Selectors
     'sklearn.feature_selection.SelectFwe': {
         'alpha': np.arange(0, 0.05, 0.001),
@@ -196,6 +198,10 @@ parser = argparse.ArgumentParser("Run TPOT to find a good machine learning pipel
 parser.add_argument("--training_data", required=True, help="Features with training labels. Columns: ID1,ID2,feat1,feat2...featN,label")
 parser.add_argument("--outfile", required=True, help="File name to write the output pipeline to")
 parser.add_argument("--classifier_subset", default=None, nargs="+", choices=Classifiers.keys(), help="Use a subset of sklearn's classifiers in search")
+parser.add_argument("--transformer_subset", default=None, nargs="+", choices=Transformers.keys(), help="Use a subset of sklearn's preprocessors in search")
+parser.add_argument("--selector_subset", default=None, nargs="+", choices=Selectors.keys(), help="Use a subset of sklearn's preprocessors in search")
+parser.add_arguments("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
+
 parser.add_argument("--score", default="average_precision", help="Which scoring function to use, default=average_precision")
 parser.add_argument("--generations", type=int, default=100, help="How many generations to run, default=100")
 parser.add_argument("--population_size", type=int, default=100, help="Size of the recombining population, default=100")
@@ -208,13 +214,30 @@ parser.add_argument("--warm_start", action='store_true', help="Flag: Whether to 
 args = parser.parse_args()
 
 
-tpot_config = Preprocessors.copy()
+#tpot_config = Preprocessors.copy()
+tpot_config = {}
+if args.selector_subset != None:
+    selectors = {i:Selectors[i] for i in args.selector_subset}
+    tpot_config.update(selectors)
+else:
+    tpot_config.update(Selectors) # use all
+
+if args.transformer_subset != None:
+    transformers = {i:Transformers[i] for i in args.transformer_subset}
+    tpot_config.update(transformers)
+else:
+    tpot_config.update(Transformers) # use all
+ 
+
 if args.classifier_subset != None:
     classifiers = {i:Classifiers[i] for i in args.classifier_subset}
     tpot_config.update(classifiers)
 else:
     tpot_config.update(Classifiers) # use all
    
+
+
+
 if not os.path.exists(args.temp_dir):
     os.makedirs(args.temp_dir) 
     
@@ -231,7 +254,7 @@ data = df.values
         
 print("Running TPOT")       
 print("Requires > 0.10.0")
-tpot = TPOTClassifier(template = 'Selector-Transformer-Classifier', 
+tpot = TPOTClassifier(template = args.temple, 'Selector-Transformer-Classifier', 
              verbosity=2, scoring=args.score, config_dict=tpot_config,
                         generations=args.generations, population_size=args.population_size,
                         memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start)

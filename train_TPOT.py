@@ -6,7 +6,9 @@ import argparse
 import numpy as np
 import pandas as pd
 from tpot import TPOTClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GroupKFold
+
+
 
 # Config dicts from https://github.com/EpistasisLab/tpot/blob/master/tpot/config/classifier.py
 
@@ -200,7 +202,7 @@ parser.add_argument("--outfile", required=True, help="File name to write the out
 parser.add_argument("--classifier_subset", default=None, nargs="+", choices=Classifiers.keys(), help="Use a subset of sklearn's classifiers in search")
 parser.add_argument("--transformer_subset", default=None, nargs="+", choices=Transformers.keys(), help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--selector_subset", default=None, nargs="+", choices=Selectors.keys(), help="Use a subset of sklearn's preprocessors in search")
-parser.add_arguments("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
+parser.add_argument("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
 
 parser.add_argument("--score", default="average_precision", help="Which scoring function to use, default=average_precision")
 parser.add_argument("--generations", type=int, default=100, help="How many generations to run, default=100")
@@ -211,10 +213,15 @@ parser.add_argument("--labels", type=int, nargs="+", default=[0,1], help="Which 
 parser.add_argument("--delimiter", default=",", help="Delimiter of training data, default=','")
 parser.add_argument("--temp_dir", default="tpot_tmp", help="Temporary directory to stash intermediate results")
 parser.add_argument("--warm_start", action='store_true', help="Flag: Whether to re-start TPOT from the results in the temp_dir")
+parser.add_argument("--cv", default=5, type = int, help="cv fold")
+parser.add_argument("--groupcol", default = None, help="Optional column containing group identifiers for row, to be used for GroupKFold crossvalidation")
+parser.add_argument("--labelcol", default = 'label', help="Name of column containing label")
+
+
+
 args = parser.parse_args()
 
 
-#tpot_config = Preprocessors.copy()
 tpot_config = {}
 if args.selector_subset != None:
     selectors = {i:Selectors[i] for i in args.selector_subset}
@@ -222,6 +229,7 @@ if args.selector_subset != None:
 else:
     tpot_config.update(Selectors) # use all
 
+# Watch out for OHE bug, https://github.com/EpistasisLab/tpot/pull/552:
 if args.transformer_subset != None:
     transformers = {i:Transformers[i] for i in args.transformer_subset}
     tpot_config.update(transformers)
@@ -243,21 +251,42 @@ if not os.path.exists(args.temp_dir):
     
 print("Loading data")
 df = pd.read_csv(args.training_data, sep=args.delimiter, index_col=args.id_cols)
-label_name = df.columns[-1]
+#label_name = df.columns[-1]
+label_name = args.labelcol
 print("Using '{}' as label column".format(label_name))
 
 print("Dropping unlabeled rows")
 df = df[df[label_name].isin(args.labels)]
 
 labels = df.pop(label_name)
-data = df.values
-        
+       
 print("Running TPOT")       
 print("Requires > 0.10.0")
-tpot = TPOTClassifier(template = args.temple, 'Selector-Transformer-Classifier', 
+
+if args.groupcol:
+    groups = df.pop(args.groupcol)
+    data = df.values
+
+    print(data)
+    print(labels)
+    print(groups) 
+    print(data.shape)
+
+    tpot = TPOTClassifier(template = args.template, 
              verbosity=2, scoring=args.score, config_dict=tpot_config,
                         generations=args.generations, population_size=args.population_size,
-                        memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start)
-tpot.fit(data, labels)
+                        memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = GroupKFold(n_splits=args.cv))
+    tpot.fit(data, labels, groups = groups)
+
+else:
+    data = df.values
+    tpot = TPOTClassifier(template = args.template, 
+             verbosity=2, scoring=args.score, config_dict=tpot_config,
+                        generations=args.generations, population_size=args.population_size,
+                        memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=0.5, cv = args.cv)
+    tpot.fit(data, labels)
+
+
+
 
 tpot.export(args.outfile)

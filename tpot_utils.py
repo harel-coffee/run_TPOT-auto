@@ -13,12 +13,17 @@ def trim_pipeline(pipeline_file, pipeline_outfile):
           pipeline = "{}\n\n{}".format(pipeline[0], pipeline[2])
           o.write(pipeline)
 
-def eval_train(exported_pipeline, training_infile, serialized_trained_model="fitted_model.p", index_cols=[0,1]):
+def eval_train(exported_pipeline, training_infile, serialized_trained_model="fitted_model.p", index_cols=[0,1], groupcol = None):
     
     assert os.path.exists(training_infile), "{} not found".format(training_infile)
     
     print("Reading training data")
     train = pd.read_csv(training_infile, index_col=index_cols)
+    if groupcol:
+       group = train.pop(groupcol)
+
+    print(train)
+
     train_label = train.pop("label").values
     train_data = train.values
     
@@ -36,7 +41,8 @@ def eval_train(exported_pipeline, training_infile, serialized_trained_model="fit
     names = train.columns
 
     sel_method = exported_pipeline.steps[0][0]
-    featimp = exported_pipeline.steps[2][1].feature_importances_
+    featimp  = exported_pipeline.steps[0][1].estimator_.feature_importances_
+
     featimp_fname = "{}.featureimportances".format(serialized_trained_model)
 
     numfeats = len(featimp)

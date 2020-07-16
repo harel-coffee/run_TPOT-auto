@@ -23,9 +23,14 @@ print("Loading data")
 
 df = pd.read_csv(args.datafile,index_col=args.index_cols).fillna(0)
 data = df.values
+print(model)
+print(data)
+print(data.shape)
+print(model.steps[0])#[1]._n_features)
 
 print("Predicting model")
-p_1 = model.predict_proba(df.values)[:,1]
+#p_1 = model.predict_proba(df.values)[:,1]
+p_1 = model.predict_proba(data)[:,1]
 
 print("Writing prediction")
 outdf = pd.DataFrame({"P_1":  p_1}, index=df.index).sort_values("P_1",ascending=False)

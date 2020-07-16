@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--output_basename", action="store", dest="output_basename", required=False, default = "TPOT",
                                             help="training and test data are csv files with first two columns as IDs and label column called 'label")
     parser.add_argument("--id_cols", type=int, nargs="+", dest="index_cols", required=False, default=[0,1], help="Which column(s) contain(s) row identifiers, default=[0,1]")
-
+    parser.add_argument("--groupcol", default = None, help="Optional column containing group identifiers for row, used for GroupKFold crossvalidation")
 
     args = parser.parse_args()
     
@@ -43,10 +43,12 @@ if __name__ == "__main__":
     pr_curve_outfile =  args.output_basename + "_test_PRC.csv"
     results_df_outfile =  args.output_basename + "_test_resultsDF.csv"
 
+
     exported_pipeline = eval_train(exported_pipeline, 
                         args.training_infile, 
                         serialized_trained_model_outfile, 
-                        args.index_cols)
+                        args.index_cols,
+                        args.groupcol)
    
     if args.test_infile:
         eval_test(exported_pipeline, args.test_infile, pr_curve_outfile, results_df_outfile, args.id_cols)

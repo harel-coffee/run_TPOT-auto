@@ -36,7 +36,7 @@ parser.add_argument("--warm_start", action='store_true', help="Flag: Whether to 
 parser.add_argument("--cv", default=5, type = int, help="cv fold")
 parser.add_argument("--groupcol", default = None, help="Optional column containing group identifiers for row, to be used for GroupKFold crossvalidation")
 parser.add_argument("--labelcol", default = 'label', help="Name of column containing label")
-parser.add_argument("--n_features_to_select", default = None, type = int, help = "Optional, Limit maximum number of features selected for training to this number")
+parser.add_argument("--max_features_to_select", default = None, type = int, help = "Optional, Limit maximum number of features selected for training to this number")
 
 
 args = parser.parse_args()

@@ -45,10 +45,9 @@ args = parser.parse_args()
 tpot_config = {}
 
 
-print(args.n_features_to_select)
 
-if args.n_features_to_select != None:
-    Selectors = Selectors_dict(args.n_features_to_select + 1) 
+if args.max_features_to_select != None:
+    Selectors = Selectors_dict(args.max_features_to_select + 1) 
 
 if args.selector_subset != None:
     selectors = {i:Selectors[i] for i in args.selector_subset}

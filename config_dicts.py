@@ -147,7 +147,7 @@ def Transformers_dict():
     return Transformers
 
 
-def Selectors_dict(n_features_to_select = None):
+def Selectors_dict(max_features_to_select = None):
     
     Selectors = {
         # Selectors
@@ -171,7 +171,7 @@ def Selectors_dict(n_features_to_select = None):
     
         'sklearn.feature_selection.RFE': {
             'step': np.arange(0.05, 1.01, 0.05),
-            'n_features_to_select' : np.arange(1, n_features_to_select, 1),
+            'n_features_to_select' : np.arange(1, max_features_to_select, 1),
 
             'estimator': {
                 'sklearn.ensemble.ExtraTreesClassifier': {
@@ -183,7 +183,7 @@ def Selectors_dict(n_features_to_select = None):
         },
     
         'sklearn.feature_selection.SelectFromModel': {
-            'max_features' : np.arange(1, n_features_to_select, 1),
+            'max_features' : np.arange(1, max_features_to_select, 1),
             'threshold' : [1e-4],
 
             'estimator': {

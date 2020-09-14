@@ -8,8 +8,8 @@ for finding an appropriate model and set of hyperparameters, as well as preproce
 Here are three scripts that run TPOT, train the model, and do prediction. This is a brief outline
 of what you'll do to run them, but there's more documentation in the scripts themselves.
 
-1.) train_TPOT.py: Run TPOT on training data to find a good pipeline. This will take a few days. 
-It can be sped up by using more jobs, but that can make it crash. Note that TPOT outputs a python 
+1.) train_TPOT.py: Run TPOT on training data to find a good pipeline. This can take several days, reduced by limiting the number of classifiers, selectors, transformers, etc to explore. 
+It can be sped up by using more jobs, but we've noticed crashes from too many jobs before. Note that TPOT outputs a python 
 script. I suggest telling TPOT to look at only a subset of the classifier models in sklearn with 
 the flag --classifier_subset, as in the example below. I've found 50 generations with a population 
 size of 50 works pretty well, but results may vary.
@@ -18,7 +18,7 @@ size of 50 works pretty well, but results may vary.
 python train_TPOT.py --training_data path/to/training_data.csv \
 --outfile tpot_output.py \
 --classifier_subset sklearn.ensemble.ExtraTreesClassifier sklearn.ensemble.RandomForestClassifier \
---generations 50 --population_size 50 --n_jobs 10
+--generations 50 --population_size 50 --n_jobs 10 --template Selector-Classifier
 ```
 
 2.) After running TPOT, it's now time to train the model and test it on your hold-out set. TPOT has
@@ -34,3 +34,6 @@ on the test set (ID1,ID2,known_label,classifier_score,FDR)
 
 3.) If you like the results of testing on your leaveout set, you can predict on your full dataset 
 using the trained, serialized model with tpot_predict.py
+
+
+-Benjamin Liebeskind and Claire McWhite

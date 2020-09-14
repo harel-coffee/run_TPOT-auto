@@ -12,7 +12,7 @@ from tpot_utils import eval_test
     
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Merge complexes given a similarity threshold")
+    parser = argparse.ArgumentParser(description="Train with an exported pipeline")
     parser.add_argument("--training_infile", action="store", dest="training_infile", required=True,
                                             help="training and test data are csv files with first two columns as IDs and label column called 'label")
     parser.add_argument("--test_infile", action="store", dest="test_infile", required=False,

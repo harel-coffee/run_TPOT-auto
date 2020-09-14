@@ -5,13 +5,13 @@ import gc
 import argparse
 import numpy as np
 import pandas as pd
-from tpot import TPOTClassifier
+from tpot import TPOTClassifier, TPOTRegressor
 from sklearn.model_selection import train_test_split, GroupKFold
-from config_dicts import Classifiers_dict, Transformers_dict, Selectors_dict
+from config_dicts import Classifiers_dict, Transformers_dict, Selectors_dict, Regressors_dict
 
 
 
-
+Regressors = Regressors_dict()
 Classifiers = Classifiers_dict()
 Selectors = Selectors_dict()
 Transformers = Transformers_dict()
@@ -22,6 +22,9 @@ parser.add_argument("--outfile", required=True, help="File name to write the out
 parser.add_argument("--classifier_subset", default=None, nargs="+", choices=Classifiers.keys(), help="Use a subset of sklearn's classifiers in search")
 parser.add_argument("--transformer_subset", default=None, nargs="+", choices=Transformers.keys(), help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--selector_subset", default=None, nargs="+", choices=Selectors.keys(), help="Use a subset of sklearn's preprocessors in search")
+parser.add_argument("--regressor_subset", default=None, nargs="+", choices=Regressors.keys(), help="Use a subset of sklearn's preprocessors in search")
+parser.add_argument("--style", default = 'classify', choices = ["classify", "regress"], default = "classify", help = "Whether to classify or regress")
+
 parser.add_argument("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
 
 parser.add_argument("--score", default="average_precision", help="Which scoring function to use, default=average_precision")
@@ -64,14 +67,24 @@ if args.transformer_subset != None:
 else:
     tpot_config.update(Transformers) # use all
  
-if args.classifier_subset != None:
-    classifiers = {i:Classifiers[i] for i in args.classifier_subset}
-    tpot_config.update(classifiers)
-else:
-    tpot_config.update(Classifiers) # use all
+
+if args.style == "classify":
+    if args.classifier_subset != None:
+        classifiers = {i:Classifiers[i] for i in args.classifier_subset}
+        tpot_config.update(classifiers)
+    else:
+        tpot_config.update(Classifiers) # use all
    
 
-if not os.path.exists(args.temp_dir):
+if args.style == "regress":
+    if args.regressor_subset != None:
+        regressors = {i:Regressors[i] for i in args.regressor_subset}
+        tpot_config.update(regressors)
+    else:
+        tpot_config.update(Regressors) # use all
+ 
+
+if not os.path.exists(args.temp_dir) and args.temp_dir != "auto":
     os.makedirs(args.temp_dir) 
     
 print("Loading data")
@@ -88,6 +101,7 @@ labels = df.pop(label_name)
 print("Running TPOT")       
 print("Requires > 0.10.0")
 
+
 if args.groupcol:
     groups = df.pop(args.groupcol)
     data = df.values
@@ -97,19 +111,37 @@ if args.groupcol:
     print(groups) 
     print(data.shape)
 
-    tpot = TPOTClassifier(template = args.template, 
-             verbosity=3, scoring=args.score, config_dict=tpot_config,
-                        generations=args.generations, population_size=args.population_size,
-                        memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = GroupKFold(n_splits=args.cv))
+
+
+    if style == "classify":
+        tpot = TPOTClassifier(template = args.template, 
+                 verbosity=3, scoring=args.score, config_dict=tpot_config,
+                            generations=args.generations, population_size=args.population_size,
+                            memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = GroupKFold(n_splits=args.cv))
+    if style == "regress":
+        tpot = TPOTRegressor(template = args.template, 
+                 verbosity=3, scoring=args.score, config_dict=tpot_config,
+                            generations=args.generations, population_size=args.population_size,
+                            memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = GroupKFold(n_splits=args.cv))
+
+
     tpot.fit(data, labels, groups = groups)
 
 else:
+
     data = df.values
-    tpot = TPOTClassifier(template = args.template, 
-             verbosity=2, scoring=args.score, config_dict=tpot_config,
-                        generations=args.generations, population_size=args.population_size,
-                        memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = args.cv)
-    tpot.fit(data, labels)
+    if style == "classify":
+        tpot = TPOTClassifier(template = args.template, 
+                 verbosity=2, scoring=args.score, config_dict=tpot_config,
+                            generations=args.generations, population_size=args.population_size,
+                            memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = args.cv)
+    if style == "regress":
+
+        tpot = TPOTRegressor(template = args.template, 
+                 verbosity=2, scoring=args.score, config_dict=tpot_config,
+                            generations=args.generations, population_size=args.population_size,
+                            memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = args.cv)
+     tpot.fit(data, labels)
 
 
 

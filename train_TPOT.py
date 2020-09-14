@@ -23,7 +23,7 @@ parser.add_argument("--classifier_subset", default=None, nargs="+", choices=Clas
 parser.add_argument("--transformer_subset", default=None, nargs="+", choices=Transformers.keys(), help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--selector_subset", default=None, nargs="+", choices=Selectors.keys(), help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--regressor_subset", default=None, nargs="+", choices=Regressors.keys(), help="Use a subset of sklearn's preprocessors in search")
-parser.add_argument("--style", default = 'classify', choices = ["classify", "regress"], default = "classify", help = "Whether to classify or regress")
+parser.add_argument("--style", choices = ["classify", "regress"], default = "classify", help = "Whether to classify or regress")
 
 parser.add_argument("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
 

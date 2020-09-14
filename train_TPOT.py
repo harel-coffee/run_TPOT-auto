@@ -141,7 +141,7 @@ else:
                  verbosity=2, scoring=args.score, config_dict=tpot_config,
                             generations=args.generations, population_size=args.population_size,
                             memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = args.cv)
-     tpot.fit(data, labels)
+    tpot.fit(data, labels)
 
 
 

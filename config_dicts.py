@@ -93,7 +93,7 @@ def Regressors_dict():
     }
     }
 
-
+    return Regressors
 
 def Classifiers_dict():
     Classifiers = {

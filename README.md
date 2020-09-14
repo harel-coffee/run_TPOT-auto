@@ -8,6 +8,8 @@ for finding an appropriate model and set of hyperparameters, as well as preproce
 Here are three scripts that run TPOT, train the model, and do prediction. This is a brief outline
 of what you'll do to run them, but there's more documentation in the scripts themselves.
 
+There is also an example.sh that can be run to test out the pipeline
+
 1.) train_TPOT.py: Run TPOT on training data to find a good pipeline. This can take several days, reduced by limiting the number of classifiers, selectors, transformers, etc to explore. 
 It can be sped up by using more jobs, but we've noticed crashes from too many jobs before. Note that TPOT outputs a python 
 script. I suggest telling TPOT to look at only a subset of the classifier models in sklearn with 
@@ -37,19 +39,4 @@ using the trained, serialized model with tpot_predict.py
 
 
 -Benjamin Liebeskind and Claire McWhite
-
-Example flow:
-
-SELECTORS_FORMATTED=\$(cat example_files/selector_subset.txt | tr '\n' ' ')
-CLASSIFIERS_FORMATTED=\$(cat example_files/classifier_subset.txt | tr '\n' ' ')
-  
-
-python train_TPOT.py --training_data featmat_labeled1 --outfile pipeline.py --template 'Selector-Classifier' --selector_subset $SELECTORS_FORMATTED --classifier_subset $CLASSIFIERS_FORMATTED --style "classify" --id_cols 0 --n_jobs 10 --10 --population_size 100 --labels -1 1 --temp_dir auto --groupcol traincomplexgroups --max_features_to_select 2
-
-
-python train_test_model2.py --training_infile example_files/featmat_labeled1 --exported_pipeline pipeline --id_cols 0 --output_basename tpot --groupcol traincomplexgroups
-
-
-python tpot_predict.py --datafile example_files/featmat --serialized_model model --outfile scored_interactions --id_cols 0
-
 

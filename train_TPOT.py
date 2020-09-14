@@ -113,12 +113,12 @@ if args.groupcol:
 
 
 
-    if style == "classify":
+    if args.style == "classify":
         tpot = TPOTClassifier(template = args.template, 
                  verbosity=3, scoring=args.score, config_dict=tpot_config,
                             generations=args.generations, population_size=args.population_size,
                             memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = GroupKFold(n_splits=args.cv))
-    if style == "regress":
+    if args.style == "regress":
         tpot = TPOTRegressor(template = args.template, 
                  verbosity=3, scoring=args.score, config_dict=tpot_config,
                             generations=args.generations, population_size=args.population_size,
@@ -130,12 +130,12 @@ if args.groupcol:
 else:
 
     data = df.values
-    if style == "classify":
+    if args.style == "classify":
         tpot = TPOTClassifier(template = args.template, 
                  verbosity=2, scoring=args.score, config_dict=tpot_config,
                             generations=args.generations, population_size=args.population_size,
                             memory=args.temp_dir, n_jobs=args.n_jobs, warm_start=args.warm_start, subsample=1.0, cv = args.cv)
-    if style == "regress":
+    if args.style == "regress":
 
         tpot = TPOTRegressor(template = args.template, 
                  verbosity=2, scoring=args.score, config_dict=tpot_config,

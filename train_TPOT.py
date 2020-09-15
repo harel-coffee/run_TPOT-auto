@@ -16,13 +16,15 @@ Classifiers = Classifiers_dict()
 Selectors = Selectors_dict()
 Transformers = Transformers_dict()
 
+print(Classifiers)
+
 parser = argparse.ArgumentParser("Run TPOT to find a good machine learning pipeline on training data")
 parser.add_argument("--training_data", required=True, help="Features with training labels. Columns: ID1,ID2,feat1,feat2...featN,label")
 parser.add_argument("--outfile", required=True, help="File name to write the output pipeline to")
 parser.add_argument("--classifier_subset", default=None, nargs="+", choices=Classifiers.keys(), help="Use a subset of sklearn's classifiers in search")
 parser.add_argument("--transformer_subset", default=None, nargs="+", choices=Transformers.keys(), help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--selector_subset", default=None, nargs="+", choices=Selectors.keys(), help="Use a subset of sklearn's preprocessors in search")
-parser.add_argument("--regressor_subset", default=None, nargs="+", choices=Regressors.keys(), help="Use a subset of sklearn's preprocessors in search")
+parser.add_argument("--regressor_subset", default=None, nargs="+", help="Use a subset of sklearn's preprocessors in search")
 parser.add_argument("--style", choices = ["classify", "regress"], default = "classify", help = "Whether to classify or regress")
 
 parser.add_argument("--template", default = 'Selector-Transformer-Classifier', help = "Organization of training pipeline")
